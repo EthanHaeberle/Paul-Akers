@@ -31,15 +31,7 @@ def upload_file():
         
         # Execute your Python script on the uploaded file here
         with open(filename, 'rb') as f:
-            pdf_text = extract_text(f)
-
-def count_word_occurrences(file_path, word):
-    count = 0
-    with open(file_path, 'rb') as f:
-        pdf_text = extract_text(f)
-        count += pdf_text.lower().count(word.lower())
-    return count
-
+            L = extract_text(f)
 
 inch_occ = count_word_occurrences(L, "part number")
 inch_and_quarter_occ = count_word_occurrences(L, "PIPE80PE1.25")
