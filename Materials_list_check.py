@@ -1,15 +1,37 @@
+
+from flask import Flask, request, render_template
+from pdfminer.high_level import extract_text
 import os
 
-desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
-os.chdir(desktop_path)
+app = Flask(__name__)
 
-Materials_list = "Ethan Haeberle Resume.pdf"
+UPLOAD_FOLDER = 'uploads'
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
-L = Materials_list
+def count_word_occurrences(pdf_text, word):
+    return pdf_text.lower().count(word.lower())
 
-# run to get pdf miner - pip install pdfminer.six
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-from pdfminer.high_level import extract_text
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return 'No file part'
+
+    file = request.files['file']
+    if file.filename == '':
+        return 'No selected file'
+
+    if file:
+        filename = os.path.join(UPLOAD_FOLDER, file.filename)
+        file.save(filename)
+        
+        # Execute your Python script on the uploaded file here
+        with open(filename, 'rb') as f:
+            pdf_text = extract_text(f)
 
 def count_word_occurrences(file_path, word):
     count = 0
@@ -159,3 +181,7 @@ if air_fitting_kit == 0 :
     print("This job does not contain an air fitting kit, was this intentional? ")
 if thirty_inch_nipple == 0 :
     print('This job does not contain a 30" nipple, was that intentional' )
+            
+
+if __name__ == '__main__':
+    app.run(debug=True)
